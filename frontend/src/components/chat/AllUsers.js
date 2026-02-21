@@ -9,8 +9,8 @@ function classNames(...classes) {
 }
 
 export default function AllUsers({
-  users,
-  chatRooms,
+  users = [],
+  chatRooms = [],
   setChatRooms,
   onlineUsersId,
   currentUser,
@@ -21,19 +21,27 @@ export default function AllUsers({
   const [contactIds, setContactIds] = useState([]);
 
   useEffect(() => {
+    if (!currentUser?.uid) {
+      setContactIds([]);
+      return;
+    }
     const Ids = chatRooms.map((chatRoom) => {
       return chatRoom.members.find((member) => member !== currentUser.uid);
     });
     setContactIds(Ids);
-  }, [chatRooms, currentUser.uid]);
+  }, [chatRooms, currentUser?.uid]);
 
   useEffect(() => {
+    if (!currentUser?.uid) {
+      setNonContacts([]);
+      return;
+    }
     setNonContacts(
       users.filter(
         (f) => f.uid !== currentUser.uid && !contactIds.includes(f.uid)
       )
     );
-  }, [contactIds, users, currentUser.uid]);
+  }, [contactIds, users, currentUser?.uid]);
 
   const changeCurrentChat = (index, chat) => {
     setSelectedChat(index);
